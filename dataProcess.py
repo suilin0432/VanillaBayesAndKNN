@@ -2,10 +2,12 @@ import os
 import jieba
 import pandas
 
+# 给Bayes提供数据的数据处理
+
 def wordRecord(wordsDict):
     dataFrame = pandas.DataFrame(wordsDict)
-    filePath = "./wordsDataset.csv"
-    dataFrame.to_csv(fileList,sep=",",header=True,index=True,encoding="utf_8_sig")
+    filePath = "./wordDataset.csv"
+    dataFrame.to_csv(filePath,sep=",",header=True,index=True,encoding="utf_8_sig")
 
 datasetDir = "./dataset"
 classL = os.listdir(datasetDir)
@@ -17,7 +19,6 @@ classList = [os.path.join(datasetDir, i) for i in classL if os.path.isdir(os.pat
 #    2.三种可能的空格\u00A0,\u0020,\u3000 先替换成 空格然后在分割
 print(classList)
 decode = "GB2312"
-
 # 过滤掉的标点符号等
 wordFilter = ["，","。","、","？","；","：","“","”","‘","’","（","）","【","】","《","》","！", " ","-","~"]
 wordsDict = {
