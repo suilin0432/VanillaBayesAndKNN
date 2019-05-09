@@ -25,15 +25,12 @@ class KNN(object):
             self.clsDict[i] = i
             self.clsCount[i] = 0
     def cal(self):
-        print("开始计算类别")
+        print("开始计算类别, K={0}".format(self.K))
         # 根据 a**2 + b**2 - 2ab
-        file = open("KNNResult.txt", "w")
+        file = open("KNNResult_K_{0}.txt".format(self.K), "w")
         a = self.feature.multiply(self.feature).sum(1)
         b = a.reshape(1, -1)
         c = self.feature.dot(self.feature.T)
-        print(a.shape)
-        print(b.shape)
-        print(c.shape)
         distance = a + b - 2*c
         # test_data_sq = self.feature.multiply(self.feature).sum(1)
         # train_data_sq = self.feature.multiply(self.feature).sum(1)
@@ -46,18 +43,16 @@ class KNN(object):
         # topK_similarity = np.zeros((num_test, self.K), np.float32)
         # for i in range(num_test):
         #     topK_similarity = distance[i, topK_idx[i]]
-        print(topK_idx.shape)
+        success = 0
+        total = 0
         for i in range(topK_idx.shape[0]):
             result = topK_idx[i].copy()
             result.resize(result.shape[1])
-            print("i ", result)
-            print(result.shape)
             clsdict = self.clsCount.copy()
-            print(clsdict)
+            # print(clsdict)
             for j in range(result.shape[0]):
+                total += 1
                 c = result[j]
-                print("j", c)
-                print(c.shape)
                 clsdict[self.cls[c]] += 1
             maxNum = 0
             maxCls = ""
@@ -65,39 +60,22 @@ class KNN(object):
                 if clsdict[j] > maxNum:
                     maxNum = clsdict[j]
                     maxCls = j
-
-        # for i in topK_idx:
-        #     print("i ",i)
-        #     print(i.shape)
-        #     clsdict = self.clsCount.copy()
-        #     print(clsdict)
-        #     for j in range(i.shape(0)):
-        #         print("j ",j)
-        #         print(j.shape)
-        #         clsdict[self.cls[j]] += 1
-        #     maxNum = 0
-        #     maxCls = ""
-        #     for j in clsdict:
-        #         if clsdict[j] > maxNum:
-        #             maxNum = clsdict[j]
-        #             maxCls = j
-            print("file{0}: Truth:{1} Predict:{2}\n".format(i, self.cls[i], maxCls))
+            if maxCls == self.cls[i]:
+                success+=1
+            # print("file{0}: Truth:{1} Predict:{2}\n".format(i, self.cls[i], maxCls))
             file.write("file{0}: Truth:{1} Predict:{2}\n".format(i, self.cls[i], maxCls))
+        file.close()
+        print("K={0}, 准确率: {1}".format(self.K, success/total))
+    def change(self, k):
+        self.K = k
 
-
-        #
-        # for i in self.feature:
-        #     print(i)
-        #     current = np.sum(np.multiply(i*self.feature), 1)
-        #     print("1")
-        #     k = sorted(enumerate(current), reverse=True, key=lambda x:x[1])
-        #     print("2")
-        #     k = k[:self.K]
-        #     d = np.zeros((1, len(self.clsSet)))
-        #     for i in k:
-        #         d[self.clsDict[self.cls[i]]] += 1
-        #     index = int(np.where(d==np.max(d)))
-        #     print(self.clsSet[index])
-
-K = KNN(3)
+K = KNN(1)
+K.cal()
+K.change(2)
+K.cal()
+K.change(3)
+K.cal()
+K.change(4)
+K.cal()
+K.change(5)
 K.cal()
